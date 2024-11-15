@@ -1,8 +1,8 @@
 source "https://rubygems.org"
 
 # Core gems
-gem "rails", "~> 7.0.0"
-gem "pg", "~> 1.1"
+gem "rails", "~> 7.1.0"
+gem "pg", "~> 1.5"
 gem "puma", "~> 5.0"
 
 # API and Authentication
@@ -30,3 +30,5 @@ end
 group :development do
   gem "annotate"
 end
+
+gem "bootsnap", "~> 1.18"
