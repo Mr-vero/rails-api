@@ -11,7 +11,7 @@ module Api
             }
           }
         end
-  
+
         def balance
           wallet = current_user.wallet
           render json: {
@@ -20,9 +20,9 @@ module Api
             }
           }
         end
-  
+
         private
-  
+
         def format_money(money)
           {
             amount: money.to_f,
@@ -31,4 +31,4 @@ module Api
         end
       end
     end
-  end
+end

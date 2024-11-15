@@ -1,4 +1,4 @@
-require 'money-rails'
+require "money-rails"
 
 MoneyRails.configure do |config|
     config.default_currency = :usd

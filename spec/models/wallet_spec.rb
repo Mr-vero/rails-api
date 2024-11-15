@@ -18,9 +18,9 @@ RSpec.describe Wallet, type: :model do
   describe '#calculate_balance' do
     it 'correctly calculates balance after transactions' do
       target_wallet = create(:user).wallet
-      
+
       WalletTransactionService.deposit(
-        wallet: wallet, 
+        wallet: wallet,
         amount: Money.new(1000, 'USD'),
         description: "Initial deposit"
       )

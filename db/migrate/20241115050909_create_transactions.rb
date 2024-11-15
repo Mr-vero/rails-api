@@ -8,9 +8,9 @@ class CreateTransactions < ActiveRecord::Migration[7.0]
       t.integer :status, default: 0, null: false
       t.integer :transaction_type, default: 0, null: false
       t.string :description, null: false
-      
+
       t.timestamps
-      
+
       t.index :status
       t.index :transaction_type
     end

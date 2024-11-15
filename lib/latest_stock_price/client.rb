@@ -1,13 +1,13 @@
 module LatestStockPrice
   class Client
     include HTTParty
-    base_uri 'https://real-time-finance-data.p.rapidapi.com'
+    base_uri "https://real-time-finance-data.p.rapidapi.com"
 
     def initialize
       @options = {
         headers: {
-          'X-RapidAPI-Key' => LatestStockPrice.api_key,
-          'X-RapidAPI-Host' => 'real-time-finance-data.p.rapidapi.com'
+          "X-RapidAPI-Key" => LatestStockPrice.api_key,
+          "X-RapidAPI-Host" => "real-time-finance-data.p.rapidapi.com"
         }
       }
     end

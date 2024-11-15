@@ -81,7 +81,7 @@ class WalletTransactionService
         )
 
         transaction.save!
-        
+
         begin
           transaction.completed!
           wallet.calculate_balance

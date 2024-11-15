@@ -8,11 +8,11 @@ class AuthTokenService
     end
 
     def decode(token)
-      user_id, expiration, signature = token.to_s.split(':')
-      
+      user_id, expiration, signature = token.to_s.split(":")
+
       return nil unless valid_token?(user_id, expiration, signature)
       return nil if expired?(expiration)
-      
+
       { user_id: user_id.to_i }
     end
 
@@ -20,7 +20,7 @@ class AuthTokenService
 
     def generate_signature(message)
       OpenSSL::HMAC.hexdigest(
-        'SHA256',
+        "SHA256",
         Rails.application.credentials.secret_key_base,
         message
       )

@@ -19,7 +19,7 @@ RSpec.describe WalletTransactionService do
 
     it 'creates a valid transfer between wallets' do
       amount = Money.new(1000, 'USD')
-      
+
       expect {
         service.transfer(
           source_wallet: wallet1,
@@ -28,10 +28,10 @@ RSpec.describe WalletTransactionService do
           description: "Test transfer"
         )
       }.to change(Transaction, :count).by(1)
-      
+
       wallet1.reload
       wallet2.reload
-      
+
       expect(wallet1.balance_cents).to eq(1000)
       expect(wallet2.balance_cents).to eq(1000)
     end
@@ -40,7 +40,7 @@ RSpec.describe WalletTransactionService do
   describe '.deposit' do
     it 'creates a valid deposit transaction' do
       amount = Money.new(1000, 'USD')
-      
+
       expect {
         service.deposit(
           wallet: wallet1,
@@ -48,7 +48,7 @@ RSpec.describe WalletTransactionService do
           description: "Test deposit"
         )
       }.to change(Transaction, :count).by(1)
-      
+
       wallet1.reload
       expect(wallet1.balance_cents).to eq(1000)
     end

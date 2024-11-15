@@ -10,7 +10,7 @@
 
 # Clear existing data
 puts "Cleaning database..."
-[User, Team, Stock, Wallet, Transaction, ExchangeRate].each(&:delete_all)
+[ User, Team, Stock, Wallet, Transaction, ExchangeRate ].each(&:delete_all)
 
 # Temporarily disable business hours validation
 Transaction.skip_business_hours_validation = true
