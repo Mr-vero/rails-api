@@ -1,7 +1,7 @@
 module AuthHelper
     def auth_headers(user = nil)
       user ||= create(:user)
-      token = JsonWebToken.encode(user_id: user.id)
+      token = AuthTokenService.encode(user_id: user.id)
       { 'Authorization': "Bearer #{token}" }
     end
   end

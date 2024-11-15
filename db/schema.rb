@@ -10,17 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_15_041810) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_15_050909) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "exchange_rates", force: :cascade do |t|
-    t.string "source_currency", null: false
-    t.string "target_currency", null: false
-    t.decimal "rate", precision: 10, scale: 6, null: false
+    t.string "source_currency"
+    t.string "target_currency"
+    t.decimal "rate", precision: 10, scale: 6
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["source_currency", "target_currency"], name: "index_exchange_rates_on_source_currency_and_target_currency", unique: true
+  end
+
+  create_table "stocks", force: :cascade do |t|
+    t.string "symbol"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["symbol"], name: "index_stocks_on_symbol"
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "token_blacklists", force: :cascade do |t|
+    t.string "token"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_token_blacklists_on_token", unique: true
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -40,22 +60,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_15_041810) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", null: false
-    t.string "password_digest", null: false
+    t.string "email"
+    t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["email"], name: "index_users_on_email"
   end
 
   create_table "wallets", force: :cascade do |t|
     t.string "owner_type", null: false
     t.bigint "owner_id", null: false
-    t.integer "balance_cents", default: 0, null: false
-    t.string "currency", default: "USD", null: false
+    t.integer "balance_cents"
+    t.string "currency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id"], name: "index_wallets_on_owner"
-    t.index ["owner_type", "owner_id"], name: "index_wallets_on_owner_type_and_owner_id"
   end
 
   add_foreign_key "transactions", "wallets", column: "source_wallet_id"
