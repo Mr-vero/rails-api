@@ -32,3 +32,6 @@ group :development do
 end
 
 gem "bootsnap", "~> 1.18"
+
+# Add to your existing gems
+gem 'jwt'

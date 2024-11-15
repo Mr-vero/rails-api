@@ -2,11 +2,32 @@ module Api
     module V1
       class WalletsController < ApplicationController
         def show
-          render json: current_user.wallet
+          wallet = current_user.wallet
+          render json: {
+            data: {
+              id: wallet.id,
+              balance: format_money(wallet.balance),
+              currency: wallet.currency
+            }
+          }
         end
   
         def balance
-          render json: { balance: current_user.wallet.balance }
+          wallet = current_user.wallet
+          render json: {
+            data: {
+              balance: format_money(wallet.balance)
+            }
+          }
+        end
+  
+        private
+  
+        def format_money(money)
+          {
+            amount: money.to_f,
+            currency: money.currency.to_s
+          }
         end
       end
     end

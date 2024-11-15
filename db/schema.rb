@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_15_041610) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_15_041810) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "exchange_rates", force: :cascade do |t|
+    t.string "source_currency", null: false
+    t.string "target_currency", null: false
+    t.decimal "rate", precision: 10, scale: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_currency", "target_currency"], name: "index_exchange_rates_on_source_currency_and_target_currency", unique: true
+  end
 
   create_table "transactions", force: :cascade do |t|
     t.bigint "source_wallet_id"

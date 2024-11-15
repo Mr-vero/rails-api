@@ -1,21 +1,19 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resource :session, only: [:create, :destroy]
+      post '/session', to: 'sessions#create'
+      delete '/session', to: 'sessions#destroy'
       
       resources :wallets, only: [:show] do
-        get :balance, on: :member
-      end
-      
-      resources :transactions, only: [:create, :index]
-      
-      resources :stocks, only: [] do
-        collection do
-          get :price
-          get :prices
-          get :price_all
+        member do
+          get :balance
         end
       end
+      
+      resources :transactions, only: [:index, :create]
+      
+      get '/stocks/price', to: 'stocks#price'
+      get '/stocks/prices', to: 'stocks#prices'
     end
   end
 end

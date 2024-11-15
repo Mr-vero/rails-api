@@ -19,11 +19,16 @@ RSpec.describe Wallet, type: :model do
     it 'correctly calculates balance after transactions' do
       target_wallet = create(:user).wallet
       
-      WalletTransactionService.deposit(wallet: wallet, amount: Money.new(1000, 'USD'))
+      WalletTransactionService.deposit(
+        wallet: wallet, 
+        amount: Money.new(1000, 'USD'),
+        description: "Initial deposit"
+      )
       WalletTransactionService.transfer(
         source_wallet: wallet,
         target_wallet: target_wallet,
-        amount: Money.new(300, 'USD')
+        amount: Money.new(300, 'USD'),
+        description: "Test transfer"
       )
 
       wallet.calculate_balance

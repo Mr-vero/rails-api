@@ -35,10 +35,28 @@ module Api
         end
   
         def index
-          transactions = current_user.wallet.source_transactions + 
-                        current_user.wallet.target_transactions
-          
-          render json: transactions.sort_by(&:created_at).reverse
+          transactions = current_user.wallet.transactions
+          render json: { 
+            data: {
+              transactions: transactions.map do |t|
+                {
+                  id: t.id,
+                  type: t.transaction_type,
+                  amount: format_money_amount(t),
+                  currency: t.currency,
+                  description: t.description,
+                  status: t.status,
+                  created_at: t.created_at
+                }
+              end
+            }
+          }
+        end
+
+        private
+
+        def format_money_amount(transaction)
+          Money.new(transaction.amount_cents, transaction.currency).to_f
         end
       end
     end

@@ -16,8 +16,7 @@ RSpec.describe 'Api::V1::Sessions', type: :request do
         post '/api/v1/session', params: valid_params
 
         expect(response).to have_http_status(:success)
-        expect(json_response['message']).to eq('Logged in successfully')
-        expect(json_response['user']['email']).to eq(user.email)
+        expect(json_response['token']).to be_present
       end
     end
 
