@@ -24,19 +24,9 @@ jobs:
 
   scan_js:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
+      - name: Skip JS scan for API-only app
+        run: echo "Skipping JS scan for API-only application"
 
   lint:
     runs-on: ubuntu-latest

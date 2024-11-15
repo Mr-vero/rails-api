@@ -38,3 +38,6 @@ end
 gem "bootsnap", "~> 1.18"
 
 gem 'latest_stock_price'
+
+# JavaScript bundling
+gem "importmap-rails", "~> 1.2"
