@@ -32,3 +32,5 @@ group :development do
 end
 
 gem "bootsnap", "~> 1.18"
+
+gem 'latest_stock_price'

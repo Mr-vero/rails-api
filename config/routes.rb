@@ -14,8 +14,15 @@ Rails.application.routes.draw do
       
       resources :transactions, only: [:index, :create]
       
-      get '/stocks/price', to: 'stocks#price'
-      get '/stocks/prices', to: 'stocks#prices'
+      resources :stocks, only: [] do
+        collection do
+          get 'price'
+          get 'price_all'
+          get 'search'
+          get 'enhanced'
+          get 'timeseries'
+        end
+      end
     end
   end
 end
