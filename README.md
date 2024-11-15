@@ -5,17 +5,17 @@ A robust internal wallet system that enables financial transactions between diff
 ## 🚀 Features
 
 - Multi-entity wallet system (Users, Teams, Stocks)
-- Secure session-based authentication
+- Secure JWT-based authentication
 - ACID-compliant transactions
 - Real-time stock price integration
 - Balance tracking and transaction history
-- Currency support via Money gem
+- Multi-currency support with exchange rates
 - RESTful API design
 
 ## 📋 Requirements
 
 - Ruby 3.2.0+
-- Rails 7.0.0+
+- Rails 7.1.0+
 - PostgreSQL 12+
 - RapidAPI Key (for stock price integration)
 

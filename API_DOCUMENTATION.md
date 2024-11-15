@@ -343,12 +343,5 @@ POST /webhooks/configure
 ```
 ```
 
-Would you like me to:
-1. Generate a Postman collection file?
-2. Add more testing examples?
-3. Create automated API tests using RSpec?
-4. Add request/response schemas for validation?
-```
-
 </rewritten_file>
 ```

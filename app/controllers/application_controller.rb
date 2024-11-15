@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  require 'jwt'
   include ActionController::Cookies
   
   before_action :authenticate_request
@@ -12,12 +13,11 @@ class ApplicationController < ActionController::API
   def authenticate_request
     header = request.headers['Authorization']
     token = header.split(' ').last if header
-    decoded = JsonWebToken.decode(token)
-    
-    if decoded
-      @current_user = User.find_by(id: decoded[:user_id])
-    else
-      render json: { error: 'Unauthorized' }, status: :unauthorized
+    begin
+      decoded = JsonWebToken.decode(token)
+      @current_user = User.find_by(id: decoded[:user_id]) if decoded
+    rescue JWT::DecodeError
+      render json: { error: 'Invalid token' }, status: :unauthorized
     end
   end
   

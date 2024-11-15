@@ -1,153 +1,153 @@
 {
-    "info": {
-      "name": "Wallet Transaction System",
-      "description": "API collection for internal wallet transaction system",
-      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  "info": {
+    "name": "Wallet Transaction System",
+    "description": "API collection for internal wallet transaction system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "{{base_url}}/session"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/session"
+          }
+        }
+      ]
     },
-    "variable": [
-      {
-        "key": "base_url",
-        "value": "http://localhost:3000/api/v1",
-        "type": "string"
-      }
-    ],
-    "item": [
-      {
-        "name": "Authentication",
-        "item": [
-          {
-            "name": "Login",
-            "request": {
-              "method": "POST",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": {
-                "mode": "raw",
-                "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
-              },
-              "url": "{{base_url}}/session"
-            }
-          },
-          {
-            "name": "Logout",
-            "request": {
-              "method": "DELETE",
-              "url": "{{base_url}}/session"
-            }
+    {
+      "name": "Wallets",
+      "item": [
+        {
+          "name": "Get Wallet Details",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/wallets/{{wallet_id}}"
           }
-        ]
-      },
-      {
-        "name": "Wallets",
-        "item": [
-          {
-            "name": "Get Wallet Details",
-            "request": {
-              "method": "GET",
-              "url": "{{base_url}}/wallets/{{wallet_id}}"
-            }
-          },
-          {
-            "name": "Get Wallet Balance",
-            "request": {
-              "method": "GET",
-              "url": "{{base_url}}/wallets/{{wallet_id}}/balance"
-            }
+        },
+        {
+          "name": "Get Wallet Balance",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/wallets/{{wallet_id}}/balance"
           }
-        ]
-      },
-      {
-        "name": "Transactions",
-        "item": [
-          {
-            "name": "Create Transfer",
-            "request": {
-              "method": "POST",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": {
-                "mode": "raw",
-                "raw": "{\n  \"type\": \"transfer\",\n  \"amount\": 100.50,\n  \"currency\": \"USD\",\n  \"target_wallet_id\": {{target_wallet_id}},\n  \"description\": \"Payment for services\"\n}"
-              },
-              "url": "{{base_url}}/transactions"
-            }
-          },
-          {
-            "name": "Create Deposit",
-            "request": {
-              "method": "POST",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": {
-                "mode": "raw",
-                "raw": "{\n  \"type\": \"deposit\",\n  \"amount\": 500.00,\n  \"currency\": \"USD\",\n  \"description\": \"Initial deposit\"\n}"
-              },
-              "url": "{{base_url}}/transactions"
-            }
-          },
-          {
-            "name": "Create Withdrawal",
-            "request": {
-              "method": "POST",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": {
-                "mode": "raw",
-                "raw": "{\n  \"type\": \"withdraw\",\n  \"amount\": 50.00,\n  \"currency\": \"USD\",\n  \"description\": \"ATM withdrawal\"\n}"
-              },
-              "url": "{{base_url}}/transactions"
-            }
-          },
-          {
-            "name": "Get Transaction History",
-            "request": {
-              "method": "GET",
-              "url": "{{base_url}}/transactions"
-            }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Create Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"transfer\",\n  \"amount\": 100.50,\n  \"currency\": \"USD\",\n  \"target_wallet_id\": {{target_wallet_id}},\n  \"description\": \"Payment for services\"\n}"
+            },
+            "url": "{{base_url}}/transactions"
           }
-        ]
-      },
-      {
-        "name": "Stocks",
-        "item": [
-          {
-            "name": "Get Single Stock Price",
-            "request": {
-              "method": "GET",
-              "url": "{{base_url}}/stocks/price?symbol=AAPL"
-            }
-          },
-          {
-            "name": "Get Multiple Stock Prices",
-            "request": {
-              "method": "GET",
-              "url": "{{base_url}}/stocks/prices?symbols=AAPL,GOOGL,MSFT"
-            }
-          },
-          {
-            "name": "Get All Stock Prices",
-            "request": {
-              "method": "GET",
-              "url": "{{base_url}}/stocks/price_all"
-            }
+        },
+        {
+          "name": "Create Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"deposit\",\n  \"amount\": 500.00,\n  \"currency\": \"USD\",\n  \"description\": \"Initial deposit\"\n}"
+            },
+            "url": "{{base_url}}/transactions"
           }
-        ]
-      }
-    ]
-  }
+        },
+        {
+          "name": "Create Withdrawal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"withdraw\",\n  \"amount\": 50.00,\n  \"currency\": \"USD\",\n  \"description\": \"ATM withdrawal\"\n}"
+            },
+            "url": "{{base_url}}/transactions"
+          }
+        },
+        {
+          "name": "Get Transaction History",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/transactions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stocks",
+      "item": [
+        {
+          "name": "Get Single Stock Price",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/stocks/price?symbol=AAPL"
+          }
+        },
+        {
+          "name": "Get Multiple Stock Prices",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/stocks/prices?symbols=AAPL,GOOGL,MSFT"
+          }
+        },
+        {
+          "name": "Get All Stock Prices",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/stocks/price_all"
+          }
+        }
+      ]
+    }
+  ]
+}
