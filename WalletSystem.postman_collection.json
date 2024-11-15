@@ -225,7 +225,7 @@
                 "value": "Bearer {{auth_token}}"
               }
             ],
-            "url": "{{base_url}}/stocks/prices",
+            "url": "{{base_url}}/stocks/price",
             "query": [
               {
                 "key": "symbols",

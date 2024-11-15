@@ -25,6 +25,10 @@ group :development, :test do
   gem "shoulda-matchers"
   gem "vcr"
   gem "webmock"
+  gem "brakeman"
+  gem "rubocop"
+  gem "rubocop-rails"
+  gem "rubocop-rails-omakase"
 end
 
 group :development do
