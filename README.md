@@ -61,7 +61,7 @@ sequenceDiagram
 ## 🚀 Features
 
 - Multi-entity wallet system (Users, Teams, Stocks)
-- Secure JWT-based authentication
+- Secure custom authentication
 - ACID-compliant transactions
 - Real-time stock price integration
 - Balance tracking and transaction history
@@ -114,7 +114,7 @@ rails server
 
 ### Authentication
 
-The system uses a custom token-based authentication (not JWT). Include the token in the Authorization header:
+The system uses a custom token-based authentication. Include the token in the Authorization header:
 ```
 Authorization: Bearer user_id:expiration:signature
 ```
