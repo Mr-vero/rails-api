@@ -58,3 +58,13 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem 'money-rails'
+gem 'bcrypt'
+gem 'httparty'
+
+group :development, :test do
+  gem 'rspec-rails'
+  gem 'factory_bot_rails'
+  gem 'faker'
+end
