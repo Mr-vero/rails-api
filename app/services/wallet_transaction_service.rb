@@ -1,3 +1,12 @@
+# Handles all wallet transaction operations with proper validations and ACID compliance
+#
+# @example Transfer money between wallets
+#   WalletTransactionService.transfer(
+#     source_wallet: user.wallet,
+#     target_wallet: team.wallet,
+#     amount: Money.new(1000, 'USD'),
+#     description: "Team contribution"
+#   )
 class WalletTransactionService
   class InsufficientFundsError < StandardError; end
   class InvalidAmountError < StandardError; end
