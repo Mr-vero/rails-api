@@ -11,9 +11,30 @@ class Wallet < ApplicationRecord
     end
     
     def calculate_balance
-      credits = target_transactions.sum(:amount_cents)
-      debits = source_transactions.sum(:amount_cents)
+      credits = target_transactions.completed.sum(:amount_cents)
+      debits = source_transactions.completed.sum(:amount_cents)
       self.balance_cents = credits - debits
       save!
+    end
+    
+    def convert_balance_to(target_currency)
+      ExchangeRate.convert(balance, from: currency, to: target_currency)
+    end
+    
+    def transactions
+      Transaction.where('source_wallet_id = ? OR target_wallet_id = ?', id, id)
+                .order(created_at: :desc)
+    end
+    
+    def pending_transactions
+      transactions.pending
+    end
+    
+    def completed_transactions
+      transactions.completed
+    end
+    
+    def failed_transactions
+      transactions.failed
     end
   end
