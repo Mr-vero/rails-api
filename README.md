@@ -2,6 +2,62 @@
 
 A robust internal wallet system that enables financial transactions between different entities (Users, Teams, Stocks) with proper validations and ACID compliance.
 
+## 📊 System Architecture
+
+### Entity Relationship Diagram
+```mermaid
+erDiagram
+    User ||--o{ Wallet : has
+    Team ||--o{ Wallet : has
+    Stock ||--o{ Wallet : has
+    Wallet ||--o{ Transaction : participates
+    Transaction }|--|| TransactionType : has
+
+    User {
+        string email
+        string password_digest
+    }
+    Team {
+        string name
+    }
+    Stock {
+        string symbol
+    }
+    Wallet {
+        integer balance_cents
+        string currency
+        string owner_type
+        integer owner_id
+    }
+    Transaction {
+        integer amount_cents
+        string currency
+        string description
+        integer status
+        integer transaction_type
+        integer source_wallet_id
+        integer target_wallet_id
+    }
+```
+
+### Transaction Flow Diagram
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant TransactionService
+    participant Database
+
+    Client->>API: POST /api/v1/transactions
+    API->>TransactionService: Process Transaction
+    TransactionService->>Database: Begin Transaction
+    TransactionService->>Database: Validate Wallets
+    TransactionService->>Database: Create Transaction Record
+    TransactionService->>Database: Update Wallet Balances
+    TransactionService->>Database: Commit Transaction
+    API->>Client: Transaction Response
+```
+
 ## 🚀 Features
 
 - Multi-entity wallet system (Users, Teams, Stocks)
@@ -19,7 +75,7 @@ A robust internal wallet system that enables financial transactions between diff
 - PostgreSQL 12+
 - RapidAPI Key (for stock price integration)
 
-## 🛠 Installation
+## 🛠 Installation & Setup
 
 1. Clone the repository
 ```bash
@@ -54,7 +110,7 @@ rails server
 ```
 
 
-## 🔑 API Endpoints
+## 🔑 API Documentation
 
 ### Authentication
 
@@ -65,7 +121,7 @@ POST /api/v1/session
 DELETE /api/v1/session
   - Logout user
 
-### Wallets
+### Wallet Operations
 
 GET /api/v1/wallets/:id
   - Get wallet details
@@ -73,7 +129,7 @@ GET /api/v1/wallets/:id
 GET /api/v1/wallets/:id/balance
   - Get current balance
 
-### Transactions
+### Transaction Operations
 
 POST /api/v1/transactions
   - Create new transaction
@@ -87,7 +143,7 @@ POST /api/v1/transactions
 GET /api/v1/transactions
   - Get transaction history
 
-### Stocks
+### Stock Operations
 
 GET /api/v1/stocks/price
   Parameters: { symbol: string }
@@ -98,7 +154,7 @@ GET /api/v1/stocks/prices
 GET /api/v1/stocks/price_all
   - Get all available stock prices
 
-## 💰 Transaction Types
+## 💰 Transaction Types & Business Rules
 
 1. **Transfer**
    - Move money between two wallets
@@ -115,34 +171,60 @@ GET /api/v1/stocks/price_all
    - Only requires source wallet
    - Creates debit transaction
 
-## 🏗 Architecture
+### Types
+- `Transfer`: Move money between two wallets
+- `Deposit`: Add money to a wallet
+- `Withdraw`: Remove money from a wallet
 
-### Models
-- `Wallet`: Holds balance and belongs to any entity
-- `Transaction`: Records money movement between wallets
-- `User`: Authentication and wallet ownership
-- `Team`: Group wallet functionality
-- `Stock`: Market-linked wallet functionality
+### Validation Rules
+1. Amount must be positive
+2. Transaction must occur during business hours (9 AM - 5 PM)
+3. Maximum transaction limit: $1,000,000
+4. Source wallet must have sufficient funds
+5. Currencies must match for transfers
+6. Proper wallet validation based on transaction type
 
-### Key Components
-- `HasWallet` concern: Adds wallet functionality to models
-- `WalletTransactionService`: Handles all transaction logic
-- `LatestStockPrice`: Library for stock price integration
+## 🏗 Architecture & Implementation
+
+### Core Components
+1. **HasWallet Concern**: Adds wallet functionality to models
+2. **Transaction Types**: STI implementation for different transaction types
+3. **WalletTransactionService**: Handles ACID-compliant transactions
+4. **LatestStockPrice Library**: Stock price integration
+
+### Database Schema
+```ruby
+create_table "wallets", force: :cascade do |t|
+  t.references :owner, polymorphic: true, null: false
+  t.integer :balance_cents, default: 0, null: false
+  t.string :currency, null: false
+  t.timestamps
+end
+
+create_table "transactions", force: :cascade do |t|
+  t.references :source_wallet
+  t.references :target_wallet
+  t.integer :amount_cents, null: false
+  t.string :currency, null: false
+  t.timestamps
+end
+```
 
 ## 🧪 Testing
 
-Run the test suite:
+### Running Tests
 ```bash
 bundle exec rspec
 ```
 
-Test coverage includes:
+### Test Coverage
 - Model validations
-- Transaction logic
+- Transaction business rules
 - API endpoints
 - Integration tests
+- Stock price integration
 
-## 🔒 Security
+## 🔒 Security Considerations
 
 - Session-based authentication
 - CSRF protection
@@ -172,25 +254,6 @@ Error responses include descriptive messages:
 }
 ```
 
-## 🔄 Database Schema
-
-```ruby
-create_table "wallets", force: :cascade do |t|
-  t.references :owner, polymorphic: true, null: false
-  t.integer :balance_cents, default: 0, null: false
-  t.string :currency, null: false
-  t.timestamps
-end
-
-create_table "transactions", force: :cascade do |t|
-  t.references :source_wallet
-  t.references :target_wallet
-  t.integer :amount_cents, null: false
-  t.string :currency, null: false
-  t.timestamps
-end
-```
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -199,11 +262,9 @@ end
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📝 License & Authors
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## 👥 Authors
 
 - Irvan - Initial work - [Irvan](https://github.com/mr-vero)
 
@@ -212,6 +273,12 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 - RapidAPI for stock price data
 - Money gem contributors
 - Rails community
+
+## 📚 Additional Resources
+
+1. [API Documentation](API_DOCUMENTATION.md)
+2. [Postman Collection](WalletSystem.postman_collection.json)
+3. [Development Guide](DEVELOPMENT.md)
 ```
 
 This README provides:

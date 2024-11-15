@@ -16,7 +16,13 @@ FactoryBot.define do
         association :target_wallet, factory: :wallet
       end
 
+      trait :withdrawal do
+        transaction_type { 'withdrawal' }
+        association :source_wallet, factory: :wallet
+      end
+
       factory :transfer_transaction, traits: [ :transfer ]
       factory :deposit_transaction, traits: [ :deposit ]
+      factory :withdrawal_transaction, traits: [ :withdrawal ]
     end
   end
