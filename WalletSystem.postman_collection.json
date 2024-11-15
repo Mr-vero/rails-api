@@ -13,6 +13,18 @@
   ],
   "item": [
     {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Status",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    },
+    {
       "name": "Authentication",
       "item": [
         {
@@ -36,6 +48,12 @@
           "name": "Logout",
           "request": {
             "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
             "url": "{{base_url}}/session"
           }
         }
@@ -48,6 +66,12 @@
           "name": "Get Wallet Details",
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
             "url": "{{base_url}}/wallets/{{wallet_id}}"
           }
         },
@@ -55,6 +79,12 @@
           "name": "Get Wallet Balance",
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
             "url": "{{base_url}}/wallets/{{wallet_id}}/balance"
           }
         }
@@ -68,6 +98,10 @@
           "request": {
             "method": "POST",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -86,6 +120,10 @@
             "method": "POST",
             "header": [
               {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
@@ -103,6 +141,10 @@
             "method": "POST",
             "header": [
               {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
@@ -118,7 +160,35 @@
           "name": "Get Transaction History",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/transactions"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/transactions",
+            "query": [
+              {
+                "key": "status",
+                "value": "completed",
+                "disabled": true
+              },
+              {
+                "key": "type",
+                "value": "transfer",
+                "disabled": true
+              },
+              {
+                "key": "from_date",
+                "value": "2024-01-01",
+                "disabled": true
+              },
+              {
+                "key": "to_date",
+                "value": "2024-12-31",
+                "disabled": true
+              }
+            ]
           }
         }
       ]
@@ -130,20 +200,50 @@
           "name": "Get Single Stock Price",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/stocks/price?symbol=AAPL"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/stocks/price",
+            "query": [
+              {
+                "key": "symbol",
+                "value": "AAPL"
+              }
+            ]
           }
         },
         {
           "name": "Get Multiple Stock Prices",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/stocks/prices?symbols=AAPL,GOOGL,MSFT"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": "{{base_url}}/stocks/prices",
+            "query": [
+              {
+                "key": "symbols",
+                "value": "AAPL,GOOGL,MSFT"
+              }
+            ]
           }
         },
         {
           "name": "Get All Stock Prices",
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
             "url": "{{base_url}}/stocks/price_all"
           }
         }
