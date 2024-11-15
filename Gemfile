@@ -3,7 +3,7 @@ source "https://rubygems.org"
 # Core gems
 gem "rails", "~> 7.1.0"
 gem "pg", "~> 1.5"
-gem "puma", "~> 5.0"
+gem "puma", "~> 6.4"
 
 # API and Authentication
 gem "bcrypt", "~> 3.1.7"
