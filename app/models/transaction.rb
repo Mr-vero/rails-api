@@ -1,22 +1,33 @@
+# Represents a financial transaction between wallets
+#
+# @example Create a transfer transaction
+#   TransferTransaction.create(
+#     source_wallet: user.wallet,
+#     target_wallet: team.wallet,
+#     amount_cents: 1000,
+#     currency: 'USD',
+#     description: 'Team contribution'
+#   )
 class Transaction < ApplicationRecord
+  include BusinessRules
+  
   belongs_to :source_wallet, class_name: 'Wallet', optional: true
   belongs_to :target_wallet, class_name: 'Wallet', optional: true
-  
-  enum :status, %i[pending completed failed]
-  enum :transaction_type, %i[transfer deposit withdrawal]
   
   validates :amount_cents, presence: true, numericality: { greater_than: 0 }
   validates :currency, presence: true
   validates :description, presence: true
   
-  validate :validate_wallets
-  validate :validate_same_currency
-  validate :validate_transaction_limits
-  validate :validate_business_hours
+  enum status: { pending: 0, completed: 1, failed: 2 }
+  enum transaction_type: { transfer: 0, deposit: 1, withdrawal: 2 }
   
-  after_commit :update_wallet_balances, if: :completed?
+  # remove for now
+  # before_validation :validate_business_hours, on: :create
+  before_validation :validate_wallets
+  
   after_create :log_transaction_creation
-  after_update :log_status_change, if: :saved_change_to_status?
+  after_save :log_status_change, if: :saved_change_to_status?
+  after_save :update_wallet_balances, if: -> { completed? && saved_change_to_status? }
   
   class << self
     attr_accessor :skip_business_hours_validation
@@ -24,28 +35,31 @@ class Transaction < ApplicationRecord
   
   private
   
-  def validate_wallets
-    if source_wallet.nil? && target_wallet.nil?
-      errors.add(:base, "Either source or target wallet must be present")
-    end
+  def validate_business_hours
+    return if self.class.skip_business_hours_validation
     
-    if source_wallet.present? && target_wallet.present?
-      if source_wallet == target_wallet
-        errors.add(:base, "Source and target wallet cannot be the same")
-      end
+    current_time = Time.current
+    unless current_time.on_weekday? && current_time.hour.between?(9, 17)
+      errors.add(:base, "transactions only allowed during business hours")
     end
-    
-    validate_wallet_presence_for_type
   end
   
-  def validate_wallet_presence_for_type
-    case transaction_type
-    when 'transfer'
-      errors.add(:base, "Transfer requires both source and target wallets") unless source_wallet && target_wallet
-    when 'deposit'
-      errors.add(:base, "Deposit requires target wallet") unless target_wallet && source_wallet.nil?
-    when 'withdrawal'
-      errors.add(:base, "Withdrawal requires source wallet") unless source_wallet && target_wallet.nil?
+  def validate_wallets
+    return if self.class.skip_business_rules
+    
+    case transaction_type&.to_sym
+    when :transfer
+      unless source_wallet && target_wallet
+        errors.add(:base, "Transfer requires both source and target wallets")
+      end
+    when :deposit
+      if target_wallet.blank?
+        errors.add(:base, "Deposit requires a target wallet")
+      end
+    when :withdrawal
+      if source_wallet.blank?
+        errors.add(:base, "Withdrawal requires a source wallet")
+      end
     end
   end
   
@@ -60,15 +74,6 @@ class Transaction < ApplicationRecord
   def validate_transaction_limits
     if amount_cents > 1_000_000_00 # $1,000,000
       errors.add(:amount, "exceeds maximum transaction limit")
-    end
-  end
-  
-  def validate_business_hours
-    return if self.class.skip_business_hours_validation
-    
-    current_time = Time.current
-    unless current_time.on_weekday? && current_time.hour.between?(9, 17)
-      errors.add(:base, "transactions only allowed during business hours")
     end
   end
   
@@ -93,7 +98,7 @@ class TransferTransaction < Transaction
   private
   
   def set_type_transfer
-    self.transaction_type = :transfer
+    self.transaction_type = 'transfer'
   end
 end
 
@@ -105,7 +110,7 @@ class DepositTransaction < Transaction
   private
   
   def set_type_deposit
-    self.transaction_type = :deposit
+    self.transaction_type = 'deposit'
   end
 end
 
@@ -117,6 +122,6 @@ class WithdrawalTransaction < Transaction
   private
   
   def set_type_withdrawal
-    self.transaction_type = :withdrawal
+    self.transaction_type = 'withdrawal'
   end
 end

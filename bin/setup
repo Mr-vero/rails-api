@@ -22,5 +22,10 @@ FileUtils.chdir APP_ROOT do
   system! "bin/rails log:clear tmp:clear"
 
   puts "\n== Restarting application server =="
-  system! "bin/rails restart"
+  begin
+    system! "bin/rails restart"
+  rescue
+    puts "\n== Restart failed, starting on port 3001 =="
+    system! "bin/rails server -p 3001"
+  end
 end

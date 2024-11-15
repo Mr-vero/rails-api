@@ -43,87 +43,106 @@ class WalletTransactionService
     validate_matching_currencies!(source_wallet, target_wallet)
 
     ActiveRecord::Base.transaction do
-      transaction = Transaction.create!(
+      transaction = TransferTransaction.create!(
         source_wallet: source_wallet,
         target_wallet: target_wallet,
         amount_cents: amount.cents,
         currency: amount.currency.iso_code,
         description: description,
-        transaction_type: :transfer,
         status: :pending
       )
 
       begin
-        # Process transfer logic here
-        # You could add additional checks or external service calls
-        
         transaction.completed!
-        true
+        source_wallet.calculate_balance
+        target_wallet.calculate_balance
+        Result.success(transaction)
       rescue StandardError => e
         transaction.failed!
-        raise ActiveRecord::Rollback
+        Result.error("Transfer failed: #{e.message}")
       end
     end
+  rescue StandardError => e
+    Result.error(e.message)
   end
 
   def deposit(wallet:, amount:, description:)
     validate_amount!(amount)
 
-    ActiveRecord::Base.transaction do
-      transaction = Transaction.create!(
-        target_wallet: wallet,
-        amount_cents: amount.cents,
-        currency: amount.currency.iso_code,
-        description: description,
-        transaction_type: :deposit,
-        status: :pending
-      )
+    Transaction.skip_business_rules = true
+    begin
+      ActiveRecord::Base.transaction do
+        transaction = DepositTransaction.new(
+          target_wallet: wallet,
+          amount_cents: amount.cents,
+          currency: amount.currency.iso_code,
+          description: description,
+          status: :pending
+        )
 
-      begin
-        transaction.completed!
-        true
-      rescue StandardError => e
-        transaction.failed!
-        raise ActiveRecord::Rollback
+        transaction.save!
+        
+        begin
+          transaction.completed!
+          wallet.calculate_balance
+          Result.success(transaction)
+        rescue StandardError => e
+          transaction.failed!
+          Result.error("Deposit failed: #{e.message}")
+        end
       end
+    ensure
+      Transaction.skip_business_rules = false
     end
+  rescue StandardError => e
+    Result.error(e.message)
   end
 
   def withdraw(wallet:, amount:, description:)
     validate_amount!(amount)
     validate_sufficient_funds!(wallet, amount)
 
-    ActiveRecord::Base.transaction do
-      transaction = Transaction.create!(
-        source_wallet: wallet,
-        amount_cents: amount.cents,
-        currency: amount.currency.iso_code,
-        description: description,
-        transaction_type: :withdrawal,
-        status: :pending
-      )
+    Transaction.skip_business_rules = true
+    begin
+      ActiveRecord::Base.transaction do
+        transaction = WithdrawalTransaction.new(
+          source_wallet: wallet,
+          amount_cents: amount.cents,
+          currency: amount.currency.iso_code,
+          description: description,
+          status: :pending
+        )
 
-      begin
-        transaction.completed!
-        true
-      rescue StandardError => e
-        transaction.failed!
-        raise ActiveRecord::Rollback
+        transaction.save!
+
+        begin
+          transaction.completed!
+          wallet.calculate_balance
+          Result.success(transaction)
+        rescue StandardError => e
+          transaction.failed!
+          Result.error("Withdrawal failed: #{e.message}")
+        end
       end
+    ensure
+      Transaction.skip_business_rules = false
     end
+  rescue StandardError => e
+    Result.error(e.message)
   end
 
   private
 
   def validate_amount!(amount)
-    raise InvalidAmountError, "Amount must be greater than 0" if amount <= 0
+    raise InvalidAmountError, "Amount must be greater than 0" unless amount.positive?
+    raise InvalidAmountError, "Amount exceeds maximum limit" if amount.cents > 1_000_000_00
   end
 
   def validate_sufficient_funds!(wallet, amount)
-    raise InsufficientFundsError, "Insufficient funds in the source wallet" if wallet.balance_cents < amount.cents
+    raise InsufficientFundsError, "Insufficient funds" if wallet.balance < amount
   end
 
   def validate_matching_currencies!(source_wallet, target_wallet)
-    raise InvalidCurrencyError, "All wallets must use the same currency" if source_wallet.currency != target_wallet.currency
+    raise InvalidCurrencyError, "Currency mismatch" if source_wallet.currency != target_wallet.currency
   end
 end

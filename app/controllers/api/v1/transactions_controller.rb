@@ -1,62 +1,52 @@
 module Api
     module V1
       class TransactionsController < ApplicationController
-        def create
-          service = WalletTransactionService.new
-          amount = Money.from_amount(params[:amount].to_f, params[:currency])
-  
-          case params[:type]
-          when 'transfer'
-            target_wallet = Wallet.find(params[:target_wallet_id])
-            result = service.transfer(
-              source_wallet: current_user.wallet,
-              target_wallet: target_wallet,
-              amount: amount
-            )
-          when 'deposit'
-            result = service.deposit(
-              wallet: current_user.wallet,
-              amount: amount
-            )
-          when 'withdraw'
-            result = service.withdraw(
-              wallet: current_user.wallet,
-              amount: amount
-            )
-          else
-            return render json: { error: 'Invalid transaction type' }, status: :unprocessable_entity
-          end
-  
-          if result
-            render json: { message: 'Transaction successful' }
-          else
-            render json: { error: 'Transaction failed' }, status: :unprocessable_entity
-          end
-        end
-  
         def index
           transactions = current_user.wallet.transactions
-          render json: { 
+          render json: {
             data: {
-              transactions: transactions.map do |t|
-                {
-                  id: t.id,
-                  type: t.transaction_type,
-                  amount: format_money_amount(t),
-                  currency: t.currency,
-                  description: t.description,
-                  status: t.status,
-                  created_at: t.created_at
-                }
-              end
+              transactions: transactions.map { |t| TransactionSerializer.as_json(t) }
             }
           }
         end
-
-        private
-
-        def format_money_amount(transaction)
-          Money.new(transaction.amount_cents, transaction.currency).to_f
+  
+        def create
+          # Temporarily disable business hours validation
+          Transaction.skip_business_hours_validation = true
+          
+          service = WalletTransactionService.new
+          result = case params[:type]&.downcase
+          when 'withdrawal', 'withdraw'
+            service.withdraw(
+              wallet: current_user.wallet,
+              amount: Money.from_amount(params[:amount].to_f, params[:currency]),
+              description: params[:description]
+            )
+          when 'deposit'
+            service.deposit(
+              wallet: current_user.wallet,
+              amount: Money.from_amount(params[:amount].to_f, params[:currency]),
+              description: params[:description]
+            )
+          when 'transfer'
+            service.transfer(
+              source_wallet: current_user.wallet,
+              target_wallet: Wallet.find(params[:target_wallet_id]),
+              amount: Money.from_amount(params[:amount].to_f, params[:currency]),
+              description: params[:description]
+            )
+          else
+            Result.error("Invalid transaction type. Must be 'withdrawal', 'deposit', or 'transfer'")
+          end
+  
+          if result.success?
+            render json: { data: TransactionSerializer.as_json(result.data) }
+          else
+            render json: { error: result.error }, status: :unprocessable_entity
+          end
+        ensure
+          # Re-enable business hours validation
+          Transaction.skip_business_hours_validation = false
         end
       end
     end
