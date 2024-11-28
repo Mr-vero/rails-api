@@ -79,7 +79,7 @@ sequenceDiagram
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/wallet-system.git
+git clone https://github.com/Mr-vero/rails-api.git
 ```
 
 
